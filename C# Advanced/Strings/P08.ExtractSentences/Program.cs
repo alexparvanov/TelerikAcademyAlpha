@@ -1,63 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class Program
+public class Program
 {
-    static void Main()
+    public static void Main(string[] args)
     {
-        string wordToSearch = Console.ReadLine();
-        var textInput = Console.ReadLine()
-            .Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim())
-            .Select(m => m += ".")
-            .ToArray();
-        
-        var sb = new StringBuilder();
+        string word = Console.ReadLine();
+        string[] sentences = Console.ReadLine().Split('.').Select(x => x.Trim()).ToArray();
 
-        foreach (var sentence in textInput)
+        List<char> separators = new List<char>();
+        foreach (var sentence in sentences)
         {
-            string currentSentence = sentence;
-            do
+            foreach (char c in sentence)
             {
-                int indexOfWord = currentSentence.IndexOf(wordToSearch);
-                //string initialWordToSearch = wordToSearch[0].ToString().ToUpper() + wordToSearch.Substring(1);
-                //if (sentence.IndexOf(initialWordToSearch) == 0)
-                //{
-                //    if (!char.IsLetter(sentence[initialWordToSearch.Length]))
-                //    {
-                //        sb.Append(sentence + " ");
-                //        break;
-                //    }
-                //}
-
-                if (indexOfWord == -1)
-                {
-                    break;
-                }
-
-                bool charBeforeIsNotLetter = true;
-                if (indexOfWord > 0)
-                {
-                    charBeforeIsNotLetter = !Char.IsLetter(currentSentence[indexOfWord - 1]);
-                }
-                bool charAfterIsNotLetter = true;
-                if (indexOfWord + wordToSearch.Length < currentSentence.Length - 1)
-                {
-                    charAfterIsNotLetter = !Char.IsLetter(currentSentence[indexOfWord + wordToSearch.Length]);
-                }
-                
-                if (indexOfWord != -1)
-                {
-                    if (charBeforeIsNotLetter && charAfterIsNotLetter)
-                    {
-                        sb.Append(sentence + " ");
-                        break;
-                    }
-                    currentSentence = currentSentence.Substring(indexOfWord + wordToSearch.Length);
-                }
-            } while (true);
+                if (!Char.IsLetter(c) && !separators.Contains(c))
+                    separators.Add(c);
+            }
         }
-        Console.WriteLine(sb.ToString().Trim());
+
+        StringBuilder result = new StringBuilder();
+        foreach (var sentence in sentences)
+        {
+            string[] words = sentence.Split(separators.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            if (words.Contains(word))
+                result.Append(sentence + ". ");
+        }
+
+        Console.WriteLine(result.ToString().Trim());
     }
 }
